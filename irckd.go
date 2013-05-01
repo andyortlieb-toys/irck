@@ -2,45 +2,69 @@ package main
 
 import (
 	"github.com/thoj/go-ircevent"
+	//"github.com/bmizerany/pq"
 	"fmt"
+	"bufio"
+	"os"
 )
 
+type Channel struct {
+	name		string
+	history 	[]string
+}
 
-func Connect() *irc.Connection {
+type Identity struct {
+	servertype	string
+	serveraddr	string
+	username	string
+	channels	[]Channel
+	connection	irc.Connection
+}
+
+type User struct {
+	username	string
+	identities	[]Identity
+}
+
+func Create() *irc.Connection {
 	//irccon := IRC("go-eventirc", "go-eventirc")
 	irccon := irc.IRC("dingolvr", "dingolvr")
 	irccon.VerboseCallbackHandler = true
+	return irccon
+}
+
+func Connect(irccon *irc.Connection) {
+	// Connect
 	err := irccon.Connect("irc.freenode.net:6667")
 	if err != nil {
 		fmt.Println("Can't connect to freenode.")
 	}
-	return irccon
-}
 
-func Manage(irccon *irc.Connection) {
+	// Join all of the channels.
 	irccon.AddCallback("001", func(e *irc.Event) { irccon.Join("#dingolove") })
-
-	irccon.AddCallback("366", func(e *irc.Event) {
-		irccon.Privmsg("#dingolove", "Test Message\n")
-		irccon.Nick("dingolvr_newnick")
-	})
-
+	
+	// Hang out.
 	irccon.Loop()
 }
 
 func main(){
-	irccon := Connect();
-	var input string
+	br := bufio.NewReaderSize(os.Stdin, 512)
+	irccon := Create();
 
-	go Manage(irccon)
+	go Connect(irccon)
 
 	for {
-		fmt.Scanln(&input)
-		if input == "/quit" {
+		msg, err := br.ReadString('\n')
+		if err != nil {
+			irccon.Quit()
+			break;
+		}
+		if msg[:5] == "/quit" {
 			irccon.Quit()
 			return
 		}
-		irccon.Privmsg("#dingolove", input)
+		fmt.Println("#dingolove/dingolvr: ", msg)
+		irccon.Privmsg("#dingolove", msg+"\n")
 	}
 
 }
