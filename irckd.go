@@ -5,10 +5,11 @@ import (
 	"net/http"
 	//"github.com/bmizerany/pq"
 	"fmt"
-	"time"
+	//"time"
 	"io"
 	// "bufio"
 	// "os"
+	"encoding/json"
 )
 
 func stub(msg string){
@@ -84,7 +85,7 @@ func (idt *Identity) AddChannel(msg string){
 	stub("TODO: Connect to channel if we are already connected to the host")
 }
 
-func initUsers(){
+func initUsers() *[]User{
 
 	stub("Set up some users")
 	guyA := User{username: "dingolvrA"}
@@ -104,9 +105,18 @@ func initUsers(){
 	idtA1.AddChannel("#dingolove")
 	fmt.Println(21, idtA1.channels, guyA.identities[0].channels)
 	idtA2.AddChannel("#dingolove")
-
 	idtA1.Connect()
 	idtA2.Connect()
+
+	guyB := User{username: "dingolvrB"}
+	idtB1 := guyB.AddIdentity(
+		"irc",
+		"dv.opasc.net:6667",
+		"dingolvrB1",
+		true,
+	)
+	idtB1.AddChannel("#dingolove")
+	idtB1.Connect()
 
 /*	// Just for now... loop with readstring until we know how to be a real good daemon.
 
@@ -125,28 +135,39 @@ func initUsers(){
 		//irccon.Privmsg("#dingolove", msg+"\n")
 	}	
 */
-}
-
-func myHandler(writer http.ResponseWriter, r *http.Request){
-	io.WriteString(writer, "sup!\n")
-}
-
-func initHttp(){
-	s := &http.Server{
-		Addr: 	":7776",
-		Handler: 	myHandler,
-		ReadTimeout:	10*time.Second,
-		WriteTimeout: 	10*time.Second,
-		MaxHeaderBytes:	1 << 20, // ??
+	return &[]User{
+		guyA,
+		guyB,
 	}
+}
 
-	s.ListenAndServe()
+func initHttp(users *[]User){
+
+    http.HandleFunc("/", func (writer http.ResponseWriter, r *http.Request){
+    	var f interface{}
+    	b := []byte(`{"Dirk":{"McJones":["a",2,3,{"rabbit":"trail"}]}}`)
+    	json.Unmarshal(b, &f)
+    	msg,err := json.MarshalIndent(&f, "", "    ")
+    	if err!=nil{
+    		stub("RUHROH")
+    	}
+    	io.WriteString(writer, string(msg))
+		//io.WriteString(writer, fmt.Sprintf("splash!",writer,"\n<br />",f,"\n<br />",b,"\n<br />",msg))
+	})
+
+    http.HandleFunc("/msg/", func (writer http.ResponseWriter, r *http.Request){
+		io.WriteString(writer, fmt.Sprintf("msg!",writer,"\n"))
+	})
+
+    http.HandleFunc("/history/", func (writer http.ResponseWriter, r *http.Request){
+		io.WriteString(writer, "history!\n")
+	})
+
+    http.ListenAndServe(":7776", nil)
 }
 
 func main(){
 	stub("Starting irckd")
-
-	initUsers()
-	initHttp()
+	initHttp(initUsers())
 }
 
