@@ -159,10 +159,20 @@ func initHttp(users *[]User){
     	}
     	io.WriteString(writer, string(msg))
 
-    	// Access something
-    	m := f.(map[string]interface{})
-    	friends := "friends"
-    	io.WriteString(writer, m[friends])
+	})
+
+	http.HandleFunc("/sandbox/jsonspecific", func (writer http.ResponseWriter, r *http.Request){
+		type Message struct {
+		    Name string
+		    Body string
+		    Time int64
+		}
+ 		body, _ := ioutil.ReadAll(r.Body)
+	    var m Message
+	    json.Unmarshal(body, &m)
+
+	    io.WriteString(writer, fmt.Sprintf( r.Method, "...", m.Name))
+
 	})
 
 
