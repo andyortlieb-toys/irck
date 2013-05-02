@@ -7,6 +7,7 @@ import (
 	"fmt"
 	//"time"
 	"io"
+	"io/ioutil"
 	// "bufio"
 	// "os"
 	"encoding/json"
@@ -143,17 +144,27 @@ func initUsers() *[]User{
 
 func initHttp(users *[]User){
 
-    http.HandleFunc("/", func (writer http.ResponseWriter, r *http.Request){
+    http.HandleFunc("/sandbox/body", func (writer http.ResponseWriter, r *http.Request){
+ 		body, _ := ioutil.ReadAll(r.Body)
+    	io.WriteString(writer, fmt.Sprintf( r.Method, string(body) ))
+	})
+
+    http.HandleFunc("/sandbox/json", func (writer http.ResponseWriter, r *http.Request){
     	var f interface{}
-    	b := []byte(`{"Dirk":{"McJones":["a",2,3,{"rabbit":"trail"}]}}`)
-    	json.Unmarshal(b, &f)
+ 		body, _ := ioutil.ReadAll(r.Body)
+    	json.Unmarshal(body, &f)
     	msg,err := json.MarshalIndent(&f, "", "    ")
     	if err!=nil{
     		stub("RUHROH")
     	}
     	io.WriteString(writer, string(msg))
-		//io.WriteString(writer, fmt.Sprintf("splash!",writer,"\n<br />",f,"\n<br />",b,"\n<br />",msg))
+
+    	// Access something
+    	m := f.(map[string]interface{})
+    	friends := "friends"
+    	io.WriteString(writer, m[friends])
 	})
+
 
     http.HandleFunc("/msg/", func (writer http.ResponseWriter, r *http.Request){
 		io.WriteString(writer, fmt.Sprintf("msg!",writer,"\n"))
