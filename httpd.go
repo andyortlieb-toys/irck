@@ -13,56 +13,53 @@ type HtSession struct {
 	user      *User
 }
 
-type HtAuthObj struct {
-	username      string
-	authorization string
-	authtype      int // 0-Password,1-Session,2-apikey
+type HtAuthorization struct {
+	Username      string
+	Authorization string
+	Authtype      int // 0-Password,1-Session,2-apikey
 }
 
 type HtMsg interface{}
 
-type HtReq struct {
-	authorization HtAuthObj
-	session       *HtSession
-	message       HtMsg
-	nada          string
+type HtRequest struct {
+	Authorization 	HtAuthorization
+	session       	*HtSession
+	user 			*User 
+	Message       	HtMsg
+	Nada          	string
 }
 
 func initHttp(users *[]User) {
 
-	sessions := []*HtSession{}
+	//sessions := []*HtSession{}
 
-	getreq := func(r *http.Request) (HtReq, error) {
-		body, err := ioutil.ReadAll(r.Body)
-		req := HtReq{}
+	getreq := func(r *http.Request) HtRequest {
+		body, _ := ioutil.ReadAll(r.Body)
+		var req HtRequest
 		json.Unmarshal(body, &req)
 
-		if req.authorization.authtype == 0 {
-			stub("Assume the password is right")
+		stub("Do proper authentication here")
 
-			stub("Create a session")
-
-		} else if req.authorization.authtype == 1 {
-
-			stub("Search for matching session id")
-			for _, v := range sessions {
-				if v.sessionid == req.authorization.authorization {
-					req.session = v
-				}
+		for _,v := range *users{
+			if (v.username==req.Authorization.Username){
+				fmt.Println("\n\n User match!")
+				req.user = &v
 			}
-
 		}
+		return req
 
-		return req, err
 	}
 
 	http.HandleFunc("/msg/", func(writer http.ResponseWriter, r *http.Request) {
-		req, err := getreq(r)
-		if err != nil {
-			io.WriteString(writer, "error. ")
-			io.WriteString(writer, fmt.Sprintf("", err))
-		}
-		io.WriteString(writer, req.nada)
+		req := getreq(r)
+
+		req.user.identities[0].connection.Privmsg("#dingolove", req.Message.(string))
+
+
+
+
+		jsn, _ := json.MarshalIndent(&req, "", "      ")
+		io.WriteString(writer, string(jsn))
 
 	})
 
@@ -88,16 +85,23 @@ func initHttp(users *[]User) {
 	})
 
 	http.HandleFunc("/sandbox/jsonspecific", func(writer http.ResponseWriter, r *http.Request) {
+		type Moar struct {
+			What	string
+			MoarThings	[]string
+		}
 		type Message struct {
 			Name string
 			Body string
 			Time int64
+			Things []int64
+			Moar 	Moar
+
 		}
 		body, _ := ioutil.ReadAll(r.Body)
 		var m Message
 		json.Unmarshal(body, &m)
 
-		io.WriteString(writer, fmt.Sprintf(r.Method, "...", m.Name))
+		io.WriteString(writer, fmt.Sprintf("",m.Moar.MoarThings))
 	})
 
 	http.ListenAndServe(":7776", nil)

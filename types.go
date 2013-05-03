@@ -52,6 +52,9 @@ func (idt *Identity) Connect() *irc.Connection {
 
 	// Manage it
 	irccon.AddCallback("001", func(e *irc.Event) { idt.JoinChannels() })
+	irccon.AddCallback("PRIVMSG", func(e *irc.Event){ 
+		fmt.Printf(" %s: %s\n", e.Nick, e.Message)
+	})
 	go func() {
 		irccon.Loop()
 	}()
