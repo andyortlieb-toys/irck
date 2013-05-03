@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-func stub(msg string){
+func stub(msg string) {
 	fmt.Println("STUB: ", msg)
 }
-func erro(msg string){
+func erro(msg string) {
 	fmt.Println("ERROR: ", msg)
 }
 
-func initUsers() *[]User{
+func initUsers() *[]User {
 
 	stub("Set up some users")
 	guyA := User{username: "dingolvrA"}
@@ -45,31 +45,30 @@ func initUsers() *[]User{
 	idtB1.AddChannel("#dingolove", true)
 	idtB1.Connect()
 
-/*	// Just for now... loop with readstring until we know how to be a real good daemon.
+	/*	// Just for now... loop with readstring until we know how to be a real good daemon.
 
-	br := bufio.NewReaderSize(os.Stdin, 512)
-	for {
-		msg, err := br.ReadString('\n')
-		if err != nil {
-			break;
+		br := bufio.NewReaderSize(os.Stdin, 512)
+		for {
+			msg, err := br.ReadString('\n')
+			if err != nil {
+				break;
+			}
+			if msg[:5] == "/quit" {
+				return
+			}
+			fmt.Println("#dingolove/dingolvr: ", msg)
+			idtA1.connection.Privmsg("AcidTrucks", msg+"\n")
+			idtA2.connection.Privmsg("#dingolove", msg+"\n")
+			//irccon.Privmsg("#dingolove", msg+"\n")
 		}
-		if msg[:5] == "/quit" {
-			return
-		}
-		fmt.Println("#dingolove/dingolvr: ", msg)
-		idtA1.connection.Privmsg("AcidTrucks", msg+"\n")
-		idtA2.connection.Privmsg("#dingolove", msg+"\n")
-		//irccon.Privmsg("#dingolove", msg+"\n")
-	}	
-*/
+	*/
 	return &[]User{
 		guyA,
 		guyB,
 	}
 }
 
-func main(){
+func main() {
 	stub("Starting irckd")
 	initHttp(initUsers())
 }
-
