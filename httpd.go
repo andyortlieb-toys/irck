@@ -24,7 +24,7 @@ type HtMsg interface{}
 type HtRequest struct {
 	Authorization 	HtAuthorization
 	session       	*HtSession
-	user 			*User 
+	user 			User 
 	Message       	HtMsg
 	Nada          	string
 }
@@ -43,7 +43,7 @@ func initHttp(users *[]User) {
 		for _,v := range *users{
 			if (v.username==req.Authorization.Username){
 				fmt.Println("\n\n User match!")
-				req.user = &v
+				req.user = v
 			}
 		}
 		return req
@@ -60,6 +60,7 @@ func initHttp(users *[]User) {
 
 		jsn, _ := json.MarshalIndent(&req, "", "      ")
 		io.WriteString(writer, string(jsn))
+		io.WriteString(writer, req.user.username)
 
 	})
 
