@@ -29,19 +29,11 @@ type HtRequest struct {
 	Nada          	string
 }
 
-
 type HtMsgMsg struct {
 	Message		string
     Servername 	string
     Nick 		string
     Recipient 	string
-}
-
-type HtRequestMsg struct {
-	Auth 			HtAuthorization
-	session       	*HtSession
-	Message 		HtMsgMsg
-	Nada          	string
 }
 
 func initHttp(users *[]User) {
@@ -78,26 +70,35 @@ func initHttp(users *[]User) {
 			}	
 	*/
 	http.HandleFunc("/msg/", func(writer http.ResponseWriter, r *http.Request) {
-		var req HtRequestMsg
+		var req HtRequest
+		var msg HtMsgMsg
 
 		// FromRequest()
 		body, _ := ioutil.ReadAll(r.Body)
-		json.Unmarshal(body, &req)	
-
+		json.Unmarshal(body, &req)
 		authenticate(&req.Auth)
+
+		// FIXME: Find a better way to get to this...
+		msgjson,_:=json.Marshal(req.Message)
+		json.Unmarshal(msgjson, &msg)
+
+
+
+
+
 
 
 		// Get Identity
 		for _,v := range req.Auth.user.identities{
-			fmt.Println("\nbeep:\n", v.servername,"/",v.nick ,"\n", req.Message.Servername,"/",req.Message.Nick,"\n")
+			fmt.Println("\nbeep:\n", v.servername,"/",v.nick ,"\n", msg.Servername,"/",msg.Nick,"\n")
 
-			if (v.servername == req.Message.Servername && v.nick == req.Message.Nick) {
+			if (v.servername == msg.Servername && v.nick == msg.Nick) {
 				// We found the identity.  Send the msg.
-				v.connection.Privmsg(req.Message.Recipient, req.Message.Message)
+				v.connection.Privmsg(msg.Recipient, msg.Message)
 			}
 		}
 
-		//req.user.identities[0].connection.Privmsg("#dingolove", req.Message.Message)
+		//req.user.identities[0].connection.Privmsg("#dingolove", msg.Message)
 
 		jsn, _ := json.MarshalIndent(req, "", "      ")
 		io.WriteString(writer, string(jsn))
