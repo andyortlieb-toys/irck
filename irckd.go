@@ -17,15 +17,17 @@ func initUsers() *[]User {
 	stub("Set up some users")
 	guyA := User{username: "dingolvrA"}
 	idtA1 := guyA.AddIdentity(
+		"freenode",
+		"dingolvrA1",
 		"irc",
 		"dv.opasc.net:6667",
-		"dingolvrA1",
 		true,
 	)
 	idtA2 := guyA.AddIdentity(
+		"freenode",
+		"dingolvrA2",
 		"irc",
 		"dv.opasc.net:6667",
-		"dingolvrA2",
 		true,
 	)
 	fmt.Println(20, idtA1.channels, guyA.identities[0].channels)
@@ -37,9 +39,10 @@ func initUsers() *[]User {
 
 	guyB := User{username: "dingolvrB"}
 	idtB1 := guyB.AddIdentity(
+		"freenode",
+		"dingolvrB1",
 		"irc",
 		"dv.opasc.net:6667",
-		"dingolvrB1",
 		true,
 	)
 	idtB1.AddChannel("#dingolove", true)

@@ -11,8 +11,9 @@ type User struct {
 	identities []*Identity
 }
 
-func (usr *User) AddIdentity(stype string, addr string, nick string, enabled bool) *Identity {
+func (usr *User) AddIdentity(sname string, nick string, stype string, addr string, enabled bool) *Identity {
 	idt := Identity{
+		servername: sname,
 		servertype: stype,
 		serveraddr: addr,
 		nick:       nick,
@@ -24,9 +25,10 @@ func (usr *User) AddIdentity(stype string, addr string, nick string, enabled boo
 }
 
 type Identity struct {
+	servername string
+	nick       string
 	servertype string
 	serveraddr string
-	nick       string
 	enabled    bool
 	channels   []*Channel
 	connection *irc.Connection

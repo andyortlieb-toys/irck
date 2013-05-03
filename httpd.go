@@ -17,50 +17,91 @@ type HtAuthorization struct {
 	Username      string
 	Authorization string
 	Authtype      int // 0-Password,1-Session,2-apikey
+	user 		 	User 
 }
 
 type HtMsg interface{}
 
 type HtRequest struct {
-	Authorization 	HtAuthorization
+	Auth 			HtAuthorization
 	session       	*HtSession
-	user 			User 
 	Message       	HtMsg
+	Nada          	string
+}
+
+
+type HtMsgMsg struct {
+	Message		string
+    Servername 	string
+    Nick 		string
+    Recipient 	string
+}
+
+type HtRequestMsg struct {
+	Auth 			HtAuthorization
+	session       	*HtSession
+	Message 		HtMsgMsg
 	Nada          	string
 }
 
 func initHttp(users *[]User) {
 
-	//sessions := []*HtSession{}
-
-	getreq := func(r *http.Request) HtRequest {
-		body, _ := ioutil.ReadAll(r.Body)
-		var req HtRequest
-		json.Unmarshal(body, &req)
-
+	authenticate := func(auth *HtAuthorization){
+		// Authenticate()
 		stub("Do proper authentication here")
-
 		for _,v := range *users{
-			if (v.username==req.Authorization.Username){
+			fmt.Println("? ", auth.Username, "?=", v.username)
+			if (v.username==auth.Username){
 				fmt.Println("\n\n User match!")
-				req.user = v
+				auth.user = v
+				return
 			}
 		}
-		return req
 
+		fmt.Println("\n\n NO MATCH! \n\n")
 	}
 
+	// Send a message through /msg/
+	// Example:
+	/*
+			{
+				"Auth": {
+			    	"Username": "dingolvrB"
+			    }
+			    ,
+			   "Message" : {
+			   		"Message": "LUVYa",
+			        "Servername": "freenode",
+			        "Nick": "dingolvrB1",
+			        "Recipient": "#dingolove"
+			    },"Nada":"whut"
+			}	
+	*/
 	http.HandleFunc("/msg/", func(writer http.ResponseWriter, r *http.Request) {
-		req := getreq(r)
+		var req HtRequestMsg
 
-		req.user.identities[0].connection.Privmsg("#dingolove", req.Message.(string))
+		// FromRequest()
+		body, _ := ioutil.ReadAll(r.Body)
+		json.Unmarshal(body, &req)	
+
+		authenticate(&req.Auth)
 
 
+		// Get Identity
+		for _,v := range req.Auth.user.identities{
+			fmt.Println("\nbeep:\n", v.servername,"/",v.nick ,"\n", req.Message.Servername,"/",req.Message.Nick,"\n")
 
+			if (v.servername == req.Message.Servername && v.nick == req.Message.Nick) {
+				// We found the identity.  Send the msg.
+				v.connection.Privmsg(req.Message.Recipient, req.Message.Message)
+			}
+		}
 
-		jsn, _ := json.MarshalIndent(&req, "", "      ")
+		//req.user.identities[0].connection.Privmsg("#dingolove", req.Message.Message)
+
+		jsn, _ := json.MarshalIndent(req, "", "      ")
 		io.WriteString(writer, string(jsn))
-		io.WriteString(writer, req.user.username)
+		io.WriteString(writer, req.Auth.user.username)
 
 	})
 
