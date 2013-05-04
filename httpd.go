@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"time"
+	"sync"
 	"io/ioutil"
 	"net/http"
 )
@@ -85,13 +87,8 @@ func initHttp(users *[]User) {
 
 
 
-
-
-
 		// Get Identity
 		for _,v := range req.Auth.user.identities{
-			fmt.Println("\nbeep:\n", v.Servername,"/",v.Nick ,"\n", msg.Servername,"/",msg.Nick,"\n")
-
 			if (v.Servername == msg.Servername && v.Nick == msg.Nick) {
 				// We found the identity.  Send the msg.
 				v.connection.Privmsg(msg.Recipient, msg.Message)
@@ -122,6 +119,95 @@ func initHttp(users *[]User) {
 		output,_ := json.MarshalIndent(&req.Auth.user.identities, "",  "      ")
 
 		io.WriteString(writer, string(output))
+	})
+
+	http.HandleFunc("/watch/all/", func(writer http.ResponseWriter, r *http.Request) {
+		var req HtRequest
+		var msg HtMsgMsg
+		
+		var watcher func(hst *History)
+		watcherkilled := false
+
+		var watcherref *func(hst *History)
+		events := []*History{}
+
+		var satisfied sync.WaitGroup
+		satisfied.Add(1)
+
+		// FromRequest()
+		body, _ := ioutil.ReadAll(r.Body)
+		json.Unmarshal(body, &req)
+		authenticate(&req.Auth)
+
+		// FIXME: Find a better way to get to this...
+		msgjson,_:=json.Marshal(req.Message)
+		json.Unmarshal(msgjson, &msg)
+
+		// Incoming IRC event handler.
+		watcher = func(hst *History){
+			if watcherkilled { return }
+			fmt.Println("\n  WATCHER YEAH", hst)
+			events = append(events, hst)
+
+			// Give another watcher time to add some crap
+			time.Sleep(time.Millisecond*100)
+			satisfied.Done()
+		}
+		watcherref = &watcher
+
+		// Add the watcher to all identities
+		for _,v := range req.Auth.user.identities{
+			fmt.Println(watcher)
+			v.watchers = append(v.watchers, watcherref)
+		}
+
+		// Wait for a signal before wrapup.
+		satisfied.Wait()
+		watcherkilled = true
+
+
+		/*
+
+			/////    //////     ////    ////     ///     ///     ////////
+			//         //         ///  ///       // //  // /    ///
+			/////      //           ////         //  ///  //     ////////
+			//         //          /// ///       //   //  //     //
+			//      /////////     //     //      //   //   //    ///////\
+
+			** Seriously...
+			
+			1) The watchers are inhibiting themselves, but they are not being
+			deleted.  That is a real problem. Figure out how to delete them.
+
+			Also
+
+			2) Deal with a server-side timeout for connections
+
+			Also
+
+			3) Test for severed connections... what happens to the watchers?
+			   Some kind of exception that we can use?  Hope so.
+		*/
+
+		// Remove the watchers
+		for _,v := range req.Auth.user.identities{
+			for idx,w := range v.watchers{
+				if w==watcherref{
+					fmt.Println("Watcher found at ", idx)
+				} else {
+					fmt.Println("Watcher at ", idx," is not a match")
+				}
+			}
+		}
+
+		// Write out the output
+		output,_ := json.MarshalIndent(&events, "", "     ")
+		io.WriteString(writer, string(output))
+
+		
+
+
+		
 	})
 
 	http.HandleFunc("/sandbox/body", func(writer http.ResponseWriter, r *http.Request) {

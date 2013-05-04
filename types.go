@@ -44,6 +44,7 @@ type Identity struct {
 	connection *irc.Connection
 	user       *User
 	History 	[]History
+	watchers    []*func(*History)
 }
 
 func (idt *Identity) JoinChannels() {
@@ -66,6 +67,7 @@ func (idt *Identity) Connect() *irc.Connection {
 	// Manage it
 	irccon.AddCallback("001", func(e *irc.Event) { idt.JoinChannels() })
 	irccon.AddCallback("PRIVMSG", func(e *irc.Event){
+		// Create the history instance
 		hst := History{}
 		hst.event = e
 		hst.Originator = e.Nick
@@ -74,7 +76,11 @@ func (idt *Identity) Connect() *irc.Connection {
 		hst.Time = time.Now()
 		hst.Raw = e.Raw
 		idt.History = append(idt.History, hst)
-		fmt.Printf(" %s: %s\n", e.Nick, e.Message)
+
+		// Run the watchers
+		for _,w := range idt.watchers{
+			(*w)(&hst)
+		}
 	})
 	go func() {
 		irccon.Loop()
