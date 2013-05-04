@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"github.com/thoj/go-ircevent"
 )
 
@@ -13,10 +14,10 @@ type User struct {
 
 func (usr *User) AddIdentity(sname string, nick string, stype string, addr string, enabled bool) *Identity {
 	idt := Identity{
-		servername: sname,
+		Servername: sname,
+		Nick:       nick,
 		servertype: stype,
 		serveraddr: addr,
-		nick:       nick,
 		enabled:    enabled,
 		user:       usr,
 	}
@@ -24,15 +25,25 @@ func (usr *User) AddIdentity(sname string, nick string, stype string, addr strin
 	return &idt
 }
 
+type History struct {
+	Time		time.Time
+	Originator 	string
+	Recipient 	string
+	Message		string
+	Raw 		string
+	event		*irc.Event
+}
+
 type Identity struct {
-	servername string
-	nick       string
+	Servername string
+	Nick       string
 	servertype string
 	serveraddr string
 	enabled    bool
 	channels   []*Channel
 	connection *irc.Connection
 	user       *User
+	History 	[]History
 }
 
 func (idt *Identity) JoinChannels() {
@@ -42,8 +53,8 @@ func (idt *Identity) JoinChannels() {
 
 func (idt *Identity) Connect() *irc.Connection {
 	// Initialize a connection
-	irccon := irc.IRC(idt.nick, idt.user.username)
-	irccon.VerboseCallbackHandler = true
+	irccon := irc.IRC(idt.Nick, idt.user.username)
+	//irccon.VerboseCallbackHandler = true
 	idt.connection = irccon
 
 	// Really connect
@@ -54,7 +65,15 @@ func (idt *Identity) Connect() *irc.Connection {
 
 	// Manage it
 	irccon.AddCallback("001", func(e *irc.Event) { idt.JoinChannels() })
-	irccon.AddCallback("PRIVMSG", func(e *irc.Event){ 
+	irccon.AddCallback("PRIVMSG", func(e *irc.Event){
+		hst := History{}
+		hst.event = e
+		hst.Originator = e.Nick
+		hst.Message = e.Message
+		hst.Recipient = e.Arguments[0]
+		hst.Time = time.Now()
+		hst.Raw = e.Raw
+		idt.History = append(idt.History, hst)
 		fmt.Printf(" %s: %s\n", e.Nick, e.Message)
 	})
 	go func() {

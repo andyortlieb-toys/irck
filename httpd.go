@@ -90,9 +90,9 @@ func initHttp(users *[]User) {
 
 		// Get Identity
 		for _,v := range req.Auth.user.identities{
-			fmt.Println("\nbeep:\n", v.servername,"/",v.nick ,"\n", msg.Servername,"/",msg.Nick,"\n")
+			fmt.Println("\nbeep:\n", v.Servername,"/",v.Nick ,"\n", msg.Servername,"/",msg.Nick,"\n")
 
-			if (v.servername == msg.Servername && v.nick == msg.Nick) {
+			if (v.Servername == msg.Servername && v.Nick == msg.Nick) {
 				// We found the identity.  Send the msg.
 				v.connection.Privmsg(msg.Recipient, msg.Message)
 			}
@@ -107,7 +107,21 @@ func initHttp(users *[]User) {
 	})
 
 	http.HandleFunc("/history/", func(writer http.ResponseWriter, r *http.Request) {
-		io.WriteString(writer, "history!\n")
+		var req HtRequest
+		var msg HtMsgMsg
+
+		// FromRequest()
+		body, _ := ioutil.ReadAll(r.Body)
+		json.Unmarshal(body, &req)
+		authenticate(&req.Auth)
+
+		// FIXME: Find a better way to get to this...
+		msgjson,_:=json.Marshal(req.Message)
+		json.Unmarshal(msgjson, &msg)
+
+		output,_ := json.MarshalIndent(&req.Auth.user.identities, "",  "      ")
+
+		io.WriteString(writer, string(output))
 	})
 
 	http.HandleFunc("/sandbox/body", func(writer http.ResponseWriter, r *http.Request) {
