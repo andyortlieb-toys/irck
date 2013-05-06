@@ -44,15 +44,14 @@ func initHttp(users *[]User) {
 		// Authenticate()
 		stub("Do proper authentication here")
 		for _,v := range *users{
-			fmt.Println("? ", auth.Username, "?=", v.username)
 			if (v.username==auth.Username){
-				fmt.Println("\n\n User match!")
+				stub("user matches this crude match but this is some honor system bs.")
 				auth.user = v
 				return
 			}
 		}
 
-		fmt.Println("\n\n NO MATCH! \n\n")
+		stub(" No match -- tell the user what's up. ")
 	}
 
 	// Send a message through /msg/
@@ -146,7 +145,7 @@ func initHttp(users *[]User) {
 		// Incoming IRC event handler.
 		watcher = func(hst *History){
 			if watcherkilled { return }
-			fmt.Println("\n  WATCHER YEAH", hst)
+
 			events = append(events, hst)
 
 			// Give another watcher time to add some crap
@@ -157,8 +156,7 @@ func initHttp(users *[]User) {
 
 		// Add the watcher to all identities
 		for _,v := range req.Auth.user.identities{
-			fmt.Println(watcher)
-			v.watchers = append(v.watchers, watcherref)
+			v.AddWatcher(watcherref)
 		}
 
 		// Wait for a signal before wrapup.
@@ -172,14 +170,9 @@ func initHttp(users *[]User) {
 			//         //         ///  ///       // //  // /    ///
 			/////      //           ////         //  ///  //     ////////
 			//         //          /// ///       //   //  //     //
-			//      /////////     //     //      //   //   //    ///////\
+			//      /////////    ///     ///     //   //   //    ///////\
 
 			** Seriously...
-			
-			1) The watchers are inhibiting themselves, but they are not being
-			deleted.  That is a real problem. Figure out how to delete them.
-
-			Also
 
 			2) Deal with a server-side timeout for connections
 
@@ -191,22 +184,12 @@ func initHttp(users *[]User) {
 
 		// Remove the watchers
 		for _,v := range req.Auth.user.identities{
-			for idx,w := range v.watchers{
-				if w==watcherref{
-					fmt.Println("Watcher found at ", idx)
-				} else {
-					fmt.Println("Watcher at ", idx," is not a match")
-				}
-			}
+			v.RemoveWatcher(watcherref)
 		}
 
 		// Write out the output
 		output,_ := json.MarshalIndent(&events, "", "     ")
 		io.WriteString(writer, string(output))
-
-		
-
-
 		
 	})
 

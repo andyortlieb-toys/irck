@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"sync"
 	"github.com/thoj/go-ircevent"
 )
 
@@ -44,7 +45,19 @@ type Identity struct {
 	connection *irc.Connection
 	user       *User
 	History 	[]History
-	watchers    []*func(*History)
+	watchers    map[*func(*History)] *func(*History)
+	watcherctl  sync.WaitGroup
+}
+
+func (idt *Identity) AddWatcher(fn *func(*History)) {
+	// Initialize my watcher controls if needed.
+	if idt.watchers == nil { idt.watchers = make( map[*func(*History)] *func(*History) )}
+
+	idt.watchers[fn] = fn
+}
+
+func (idt *Identity) RemoveWatcher(fn *func(*History)) {
+	delete (idt.watchers, fn)
 }
 
 func (idt *Identity) JoinChannels() {
