@@ -45,7 +45,7 @@ func initHttp(users []*User) {
 		for _,v := range users{
 			if (v.username==auth.Username){
 				stub("user matches this crude match but this is some honor system bs.")
-				auth.user = v
+				auth.user = 	v
 				return
 			}
 		}
@@ -127,6 +127,7 @@ func initHttp(users []*User) {
 
 		var satisfied sync.WaitGroup
 		satisfied.Add(1)
+		var isSatisfied = false
 
 		// FromRequest()
 		body, _ := ioutil.ReadAll(r.Body)
@@ -145,6 +146,9 @@ func initHttp(users []*User) {
 
 			// Give another watcher time to add some crap
 			time.Sleep(time.Millisecond*100)
+
+			if (isSatisfied) { return } // Snooze/looze.
+			isSatisfied = true
 			satisfied.Done()
 		}
 		watcherref = &watcher
