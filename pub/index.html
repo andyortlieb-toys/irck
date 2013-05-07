@@ -1,26 +1,35 @@
 <!doctype html>
 <html ng-app>
 	<head>
-		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 		<script src="/js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/style/main.css">
 	</head>
 	<body>
 
 
-	<div ng-controller="main">
-      <span>{{remaining()}} of {{todos.length}} remaining</span>
-      [ <a href="" ng-click="archive()">archive</a> ]
-      <ul class="unstyled">
-        <li ng-repeat="todo in todos">
-          <input type="checkbox" ng-model="todo.done">
-          <span class="done-{{todo.done}}">{{todo.text}}</span>
+	<div ng-controller="main_controller">
+      <form ng-submit='login()'>
+          <p>Who are you? </p>
+          <input type="text" ng-model="usernameText">
+          <input type='submit' value='login'>
+      </form>
+
+
+      <ul >
+        <li ng-repeat="identity in identities">
+          <input type="button">identity.servername</button>
         </li>
       </ul>
-      <form ng-submit="addTodo()">
-        <input type="text" ng-model="todoText"  size="30"
-               placeholder="add new todo here">
-        <input class="btn-primary" type="submit" value="add">
-      </form>
+
+      <ul>
+        <li ng-repeat="identity in identities"> identity.Servername </li>
+          <ul>
+            <li ng-repeat="stream in identity.streams"> stream.name </li>
+          </ul>
+        </li>
+      </ul>
     </div>
 
 

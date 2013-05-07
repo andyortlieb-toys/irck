@@ -1,29 +1,32 @@
-function main($scope) {
-  $scope.todos = [
-    {text:'learn angular', done:true},
-    {text:'build an angular app', done:false}];
- 
- 	console.log($scope.todos.push)
+function main_controller($scope) {
+  $scope.usernameText = '';
 
-  $scope.addTodo = function() {
-    $scope.todos.push({text:$scope.todoText, done:false});
-    $scope.todoText = '';
+  $scope.auth = {
+    username: null
   };
+  $scope.HistoryIdx = 0;
  
-  $scope.remaining = function() {
-    var count = 0;
-    angular.forEach($scope.todos, function(todo) {
-      count += todo.done ? 0 : 1;
-    });
-    return count;
-  };
- 
-  $scope.archive = function() {
-    var oldTodos = $scope.todos;
-    $scope.todos = [];
-    angular.forEach(oldTodos, function(todo) {
-      if (!todo.done) $scope.todos.push(todo);
-    });
+  function getHistory(HistoryIdx){
+    var HistoryIdx = HistoryIdx || 0;
+    $.post(
+      '/history/', 
+      JSON.stringify({
+        Auth:{
+          Username: $scope.auth.username,
+        }
+      }),
+      function(data){
+        console.log(data)
+      },
+      'json'
+    );
+  }
+
+  $scope.login = function() {
+    console.log("bink")
+    $scope.auth.username = $scope.usernameText
+    console.log($scope.auth.username, dingo2=$scope)
+    getHistory();
   };
 
   console.log(dingo=$scope);
