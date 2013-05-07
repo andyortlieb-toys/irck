@@ -17,20 +17,18 @@
       </form>
 
 
-      <ul >
-        <li ng-repeat="identity in identities">
-          <input type="button">identity.servername</button>
-        </li>
-      </ul>
+      <span ng-repeat="identity in identities">
+        <button type="button" ng-click="showChatIdentitiy({{identity.Servername}})">{{identity.Servername}}</button>
+      </span>
 
-      <ul>
-        <li ng-repeat="identity in identities"> identity.Servername </li>
-          <ul>
-            <li ng-repeat="stream in identity.streams"> stream.name </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+      <div ng-repeat="identity in identities" class="irck-chat-identity" id="irck-chat-identity-{{identity.Servername}}" style="display:none;">
+
+          <span ng-repeat="stream in identity.streams"> 
+            <button type="button">{{stream.name}}</button>
+          </span>
+
+
+      </div>
 
 
 	</body>

@@ -5,8 +5,10 @@ function main_controller($scope) {
     username: null
   };
   $scope.HistoryIdx = 0;
+  $scope.identities = [];
+  $scope.interruptListen = false;
  
-  function getHistory(HistoryIdx){
+  function getHistory(historyIdx, startListen){
     var HistoryIdx = HistoryIdx || 0;
     $.post(
       '/history/', 
@@ -16,10 +18,48 @@ function main_controller($scope) {
         }
       }),
       function(data){
-        console.log(data)
+        $scope.$apply(function(){
+          $scope.identities = data.Identities;
+          $scope.HistoryIdx = data.HistoryIdx;
+
+          if (startListen) { startListen(); }
+
+        });
       },
       'json'
     );
+  }
+
+  function startListen(recurrence){
+    if (!recurrence) { $scope.interruptListen = false; }
+    if (!$scope.interruptListen){
+
+    $.post(
+      '/watch/all/', 
+      JSON.stringify({
+        Auth:{
+          Username: $scope.auth.username,
+        }
+      }),
+      function(data){
+        $scope.$apply(function(){
+          $scope.identities = data.Identities;
+          $scope.HistoryIdx = data.HistoryIdx;
+
+          if (startListen) { startListen(); }
+
+        });
+      },
+      'json'
+    );
+
+    }
+  }
+
+  $scope.showChatIdentity = function(name){
+    console.log(name);
+    $(".irck-chat-identity").hide();
+    $("#irck-chat-identity-"+name).show();
   }
 
   $scope.login = function() {
