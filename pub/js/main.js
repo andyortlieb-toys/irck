@@ -8,7 +8,7 @@ function main_controller($scope) {
   $scope.identities = [];
   $scope.interruptListen = false;
  
-  function getHistory(historyIdx, startListen){
+  function getHistory(historyIdx, startListening){
     var HistoryIdx = HistoryIdx || 0;
     $.post(
       '/history/', 
@@ -22,7 +22,8 @@ function main_controller($scope) {
           $scope.identities = data.Identities;
           $scope.HistoryIdx = data.HistoryIdx;
 
-          if (startListen) { startListen(); }
+          console.log("History:", data)
+          if (startListening) { startListen(); }
 
         });
       },
@@ -43,11 +44,11 @@ function main_controller($scope) {
       }),
       function(data){
         $scope.$apply(function(){
-          $scope.identities = data.Identities;
-          $scope.HistoryIdx = data.HistoryIdx;
+          // Process incoming messages
+          //processMessages(data);
 
-          if (startListen) { startListen(); }
-
+          console.log("Got new messages: ", data)
+          startListen(true);
         });
       },
       'json'
@@ -66,7 +67,7 @@ function main_controller($scope) {
     console.log("bink")
     $scope.auth.username = $scope.usernameText
     console.log($scope.auth.username, dingo2=$scope)
-    getHistory();
+    getHistory(-1, true);
   };
 
   console.log(dingo=$scope);
