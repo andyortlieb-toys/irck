@@ -24,15 +24,20 @@
       <div ng-repeat="identity in identities" class="irck-chat-identity" id="irck-chat-identity-{{identity.IdentityIdx}}" style="display:none;">
 
           <span ng-repeat="(streamname, stream) in identity.streams"> 
-            <button type="button">{{streamname}}</button>
+            <button type="button" onclick="showChatStream({{identity.IdentityIdx}}, {{stream.streamid}})">{{streamname}}</button>
           </span>
 
-          <div ng-repeat="(streamname, stream) in identity.streams">
-            <div ng-repeat="msg in stream.messages" class="irck-chat-stream" id="irck-chat-stream-{{identity.IdentityIdx}}-{{stream.streamid}}">
+          <div ng-repeat="(streamname, stream) in identity.streams" class="irck-chat-stream" id="irck-chat-stream-{{identity.IdentityIdx}}-{{stream.streamid}}" style="display:none;">
+            <div ng-repeat="msg in stream.messages">
               <b> {{msg.Originator}} : </b>&nbsp; {{msg.Message}}
             </div>
-          </div>
 
+            <form ng-submit='msg(identity, streamname)'>
+              <input type='text' ng-model='identity.textinput' style='width:75%'> <input type='submit' value='textiguess'>
+            </form>
+
+
+          </div>
 
       </div>
 

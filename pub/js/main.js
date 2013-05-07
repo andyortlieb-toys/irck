@@ -1,7 +1,12 @@
 showChatIdentity = function(name){
-    console.log("#irck-chat-identity-"+name);
     $(".irck-chat-identity").hide();
     $("#irck-chat-identity-"+name).show();
+  }
+
+showChatStream = function(idid, streamid){
+    console.log("#irck-chat-stream-"+idid+"-"+streamid)
+    $(".irck-chat-stream").hide();
+    $("#irck-chat-stream-"+idid+"-"+streamid).show();
   }
 
 function main_controller($scope) {
@@ -54,14 +59,13 @@ function main_controller($scope) {
 
     //Is it a channel or a privmsg?
     if (msg.Recipient == identity.Nick){
-      streamname = msg.Originator
+      streamname = msg.Originator;
     } else {
-      streamname = '_'+msg.Recipient.slice(1)
+      streamname = msg.Recipient;
     }
 
-    identity.streams[streamname] = identity.streams[streamname] || { messages: [] }
+    identity.streams[streamname] = identity.streams[streamname] || { messages: [], streamid: genId() }
     identity.streams[streamname].messages.push(msg)
-    identity.streams[streamname].streamid=genId();
 
 
   }
@@ -104,7 +108,7 @@ function main_controller($scope) {
       '/watch/all/', 
       JSON.stringify({
         Auth:{
-          Username: $scope.auth.username,
+          Username: $scope.auth.username
         }
       }),
       function(data){
@@ -132,5 +136,27 @@ function main_controller($scope) {
     getHistory(-1, true);
   };
 
+  $scope.msg = function(identity, streamname){
+    console.log("dink!", arguments)
+
+    $.post(
+      '/msg/',
+      JSON.stringify({
+        Auth: {
+          Username: $scope.auth.username
+        },
+        "Message":{
+          "Servername":identity.Servername,
+          "Nick":identity.Nick,
+          "Recipient":streamname,
+          "Message":identity.textinput
+        }
+      })
+    );
+
+    identity.textinput = ''
+
+
+  }
   console.log(dingo=$scope);
 }
