@@ -18,13 +18,13 @@
 
 
       <span ng-repeat="identity in identities">
-        <button type="button" ng-click="showChatIdentitiy({{identity.Servername}})">{{identity.Servername}}</button>
+        <button type="button" onclick="showChatIdentity({{identity.IdentityIdx}})">{{identity.Servername}} ({{identity.IdentityIdx}})</button>
       </span>
 
-      <div ng-repeat="identity in identities" class="irck-chat-identity" id="irck-chat-identity-{{identity.Servername}}" style="display:none;">
+      <div ng-repeat="identity in identities" class="irck-chat-identity" id="irck-chat-identity-{{identity.IdentityIdx}}" style="display:none;">
 
-          <span ng-repeat="stream in identity.streams"> 
-            <button type="button">{{stream.name}}</button>
+          <span ng-repeat="(streamname, stream) in identity.streams"> 
+            <button type="button">{{streamname}}</button>
           </span>
 
 

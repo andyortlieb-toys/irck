@@ -48,6 +48,7 @@ type History struct {
 	Message		string
 	Raw 		string
 	HistoryIdx	int
+	IdentityIdx int
 
 	event		*irc.Event
 }
@@ -109,6 +110,7 @@ func (idt *Identity) Connect() *irc.Connection {
 		hst.Time = time.Now()
 		hst.Raw = e.Raw
 		hst.HistoryIdx = idt.user.HistoryIncr()
+		hst.IdentityIdx = idt.IdentityIdx
 		idt.History = append(idt.History, hst)
 
 		// Run the watchers
