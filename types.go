@@ -82,7 +82,14 @@ func (idt *Identity) RemoveWatcher(fn *func(*History)) {
 
 func (idt *Identity) JoinChannels() {
 	stub("Joining Channels")
-	idt.connection.Join("#dingolove")
+
+	/*
+
+				FIXME !!!!!
+
+	*/
+
+	idt.connection.Join("#mkedev")
 }
 
 func (idt *Identity) Connect() *irc.Connection {
@@ -99,8 +106,8 @@ func (idt *Identity) Connect() *irc.Connection {
 
 	// Manage it
 	irccon.AddCallback("001", func(e *irc.Event) { idt.JoinChannels() })
-	irccon.AddCallback("PRIVMSG", func(e *irc.Event){
 
+	historyCallback := func(e *irc.Event){
 		// Create the history instance
 		hst := History{}
 		hst.event = e
@@ -113,8 +120,12 @@ func (idt *Identity) Connect() *irc.Connection {
 		hst.IdentityIdx = idt.IdentityIdx
 
 		idt.AddHistory(&hst)
+	}
 
-	})
+	irccon.AddCallback("PRIVMSG", historyCallback)
+	irccon.AddCallback("NOTICE", historyCallback)
+	irccon.AddCallback("JOIN", historyCallback)
+
 	go func() {
 		irccon.Loop()
 	}()

@@ -15,29 +15,30 @@ func erro(msg string) {
 func initUsers() []*User {
 
 	stub("Set up some users")
-	guyA := User{username: "dingolvrA"}
+	guyA := User{username: "AcidTrucks"}
 	idtA1 := guyA.AddIdentity(
 		"freenode",
-		"dingolvrA1",
+		"AcidTrucks",
 		"irc",
-		"dv.opasc.net:6667",
+		"irc.freenode.net:6667",
 		true,
 	)
-	idtA2 := guyA.AddIdentity(
+	idtA1.AddChannel("#mkdedev", true)
+	idtA1.Connect()
+
+	/*idtA2 := guyA.AddIdentity(
 		"freenode",
 		"dingolvrA2",
 		"irc",
 		"dv.opasc.net:6667",
 		true,
-	)
-	fmt.Println(20, idtA1.channels, guyA.Identities[0].channels)
-	idtA1.AddChannel("#dingolove", true)
-	fmt.Println(21, idtA1.channels, guyA.Identities[0].channels)
-	idtA2.AddChannel("#dingolove", true)
-	idtA1.Connect()
-	idtA2.Connect()
+	)*/
 
-	guyB := User{username: "dingolvrB"}
+
+	//idtA2.AddChannel("#dingolove", true)
+	//idtA2.Connect()
+
+	/*guyB := User{username: "dingolvrB"}
 	idtB1 := guyB.AddIdentity(
 		"freenode",
 		"dingolvrB1",
@@ -47,7 +48,7 @@ func initUsers() []*User {
 	)
 	idtB1.AddChannel("#dingolove", true)
 	idtB1.Connect()
-
+	*/
 	/*	// Just for now... loop with readstring until we know how to be a real good daemon.
 
 		br := bufio.NewReaderSize(os.Stdin, 512)
@@ -67,7 +68,7 @@ func initUsers() []*User {
 	*/
 	return []*User{
 		&guyA,
-		&guyB,
+		//&guyB,
 	}
 }
 
