@@ -86,6 +86,7 @@ function main_controller($scope) {
 
           // Find the history of messages.
           for (var i=0;i<$scope.identities.length;++i){
+            if (!$scope.identities[i].History){ continue; }
             for (var h=0; h<$scope.identities[i].History.length;++h){
               processMessage($scope.identities[i].History[h], false);
             }

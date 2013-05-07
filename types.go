@@ -57,7 +57,7 @@ type Identity struct {
 	IdentityIdx	int
 	Servername string
 	Nick       string
-	History 	[]History
+	History 	[]*History
 
 	servertype string
 	serveraddr string
@@ -88,7 +88,7 @@ func (idt *Identity) JoinChannels() {
 func (idt *Identity) Connect() *irc.Connection {
 	// Initialize a connection
 	irccon := irc.IRC(idt.Nick, idt.user.username)
-	//irccon.VerboseCallbackHandler = true
+	irccon.VerboseCallbackHandler = true
 	idt.connection = irccon
 
 	// Really connect
@@ -111,17 +111,28 @@ func (idt *Identity) Connect() *irc.Connection {
 		hst.Raw = e.Raw
 		hst.HistoryIdx = idt.user.HistoryIncr()
 		hst.IdentityIdx = idt.IdentityIdx
-		idt.History = append(idt.History, hst)
 
-		// Run the watchers
-		for _,w := range idt.watchers{
-			(*w)(&hst)
-		}
+		idt.AddHistory(&hst)
+
 	})
 	go func() {
 		irccon.Loop()
 	}()
 	return irccon
+}
+
+func (idt *Identity) AddHistory(hst *History){
+	hst.HistoryIdx = idt.user.HistoryIncr()
+	hst.IdentityIdx = idt.IdentityIdx
+	idt.History = append(idt.History, hst)
+	idt.RunWatchers(hst)
+}
+
+func (idt *Identity) RunWatchers(hst *History){
+	// Run the watchers
+	for _,w := range idt.watchers{
+		(*w)(hst)
+	}
 }
 
 func (idt *Identity) AddChannel(msg string, enabled bool) {

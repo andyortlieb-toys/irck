@@ -90,6 +90,16 @@ func initHttp(users []*User) {
 			if (v.Servername == msg.Servername && v.Nick == msg.Nick) {
 				// We found the identity.  Send the msg.
 				v.connection.Privmsg(msg.Recipient, msg.Message)
+
+				// Record history--notify client, etc.
+				// Create the history instance
+				hst := History{}
+
+				hst.Originator = msg.Nick
+				hst.Message = msg.Message
+				hst.Recipient = msg.Recipient
+				hst.Time = time.Now()
+				v.AddHistory(&hst);			
 			}
 		}
 
