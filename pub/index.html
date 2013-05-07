@@ -27,6 +27,12 @@
             <button type="button">{{streamname}}</button>
           </span>
 
+          <div ng-repeat="(streamname, stream) in identity.streams">
+            <div ng-repeat="msg in stream.messages" class="irck-chat-stream" id="irck-chat-stream-{{identity.IdentityIdx}}-{{stream.streamid}}">
+              <b> {{msg.Originator}} : </b>&nbsp; {{msg.Message}}
+            </div>
+          </div>
+
 
       </div>
 

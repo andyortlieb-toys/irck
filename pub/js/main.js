@@ -33,6 +33,11 @@ function main_controller($scope) {
     }
   }
 
+  function genId(){
+    return ++genId.next;
+  }
+  genId.next = 0;
+
   function processMessage(msg, forceApply){
     if (forceApply){
       return $scope.$apply( function(){ processMessage(msg); } );
@@ -51,11 +56,12 @@ function main_controller($scope) {
     if (msg.Recipient == identity.Nick){
       streamname = msg.Originator
     } else {
-      streamname = msg.Recipient
+      streamname = '_'+msg.Recipient.slice(1)
     }
 
     identity.streams[streamname] = identity.streams[streamname] || { messages: [] }
     identity.streams[streamname].messages.push(msg)
+    identity.streams[streamname].streamid=genId();
 
 
   }
