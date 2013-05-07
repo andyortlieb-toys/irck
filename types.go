@@ -8,20 +8,30 @@ import (
 )
 
 type User struct {
-	username   string
-	password   string
 	Identities []*Identity
 	HistoryIdx	int
+
+	username   string
+	password   string
+	identityIdx	int
 }
 
-func (usr *User) HistoryIncr() {
+func (usr *User) IdentityIncr() int {
+	usr.identityIdx++
+	return usr.identityIdx
+}
+
+func (usr *User) HistoryIncr() int {
 	usr.HistoryIdx++
+	return usr.HistoryIdx
 }
 
 func (usr *User) AddIdentity(sname string, nick string, stype string, addr string, enabled bool) *Identity {
 	idt := Identity{
+		IdentityIdx: usr.IdentityIncr(),
 		Servername: sname,
 		Nick:       nick,
+
 		servertype: stype,
 		serveraddr: addr,
 		enabled:    enabled,
@@ -37,20 +47,23 @@ type History struct {
 	Recipient 	string
 	Message		string
 	Raw 		string
-	event		*irc.Event
 	HistoryIdx	int
+
+	event		*irc.Event
 }
 
 type Identity struct {
+	IdentityIdx	int
 	Servername string
 	Nick       string
+	History 	[]History
+
 	servertype string
 	serveraddr string
 	enabled    bool
 	channels   []*Channel
 	connection *irc.Connection
 	user       *User
-	History 	[]History
 	watchers    map[*func(*History)] *func(*History)
 	watcherctl  sync.WaitGroup
 }
@@ -87,8 +100,6 @@ func (idt *Identity) Connect() *irc.Connection {
 	irccon.AddCallback("001", func(e *irc.Event) { idt.JoinChannels() })
 	irccon.AddCallback("PRIVMSG", func(e *irc.Event){
 
-		idt.user.HistoryIncr()
-
 		// Create the history instance
 		hst := History{}
 		hst.event = e
@@ -97,7 +108,7 @@ func (idt *Identity) Connect() *irc.Connection {
 		hst.Recipient = e.Arguments[0]
 		hst.Time = time.Now()
 		hst.Raw = e.Raw
-		hst.HistoryIdx = idt.user.HistoryIdx
+		hst.HistoryIdx = idt.user.HistoryIncr()
 		idt.History = append(idt.History, hst)
 
 		// Run the watchers
