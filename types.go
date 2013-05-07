@@ -10,7 +10,12 @@ import (
 type User struct {
 	username   string
 	password   string
-	identities []*Identity
+	Identities []*Identity
+	HistoryIdx	int
+}
+
+func (usr *User) HistoryIncr() {
+	usr.HistoryIdx++
 }
 
 func (usr *User) AddIdentity(sname string, nick string, stype string, addr string, enabled bool) *Identity {
@@ -22,7 +27,7 @@ func (usr *User) AddIdentity(sname string, nick string, stype string, addr strin
 		enabled:    enabled,
 		user:       usr,
 	}
-	usr.identities = append(usr.identities, &idt)
+	usr.Identities = append(usr.Identities, &idt)
 	return &idt
 }
 
@@ -33,6 +38,7 @@ type History struct {
 	Message		string
 	Raw 		string
 	event		*irc.Event
+	HistoryIdx	int
 }
 
 type Identity struct {
@@ -80,6 +86,9 @@ func (idt *Identity) Connect() *irc.Connection {
 	// Manage it
 	irccon.AddCallback("001", func(e *irc.Event) { idt.JoinChannels() })
 	irccon.AddCallback("PRIVMSG", func(e *irc.Event){
+
+		idt.user.HistoryIncr()
+
 		// Create the history instance
 		hst := History{}
 		hst.event = e
@@ -88,6 +97,7 @@ func (idt *Identity) Connect() *irc.Connection {
 		hst.Recipient = e.Arguments[0]
 		hst.Time = time.Now()
 		hst.Raw = e.Raw
+		hst.HistoryIdx = idt.user.HistoryIdx
 		idt.History = append(idt.History, hst)
 
 		// Run the watchers

@@ -19,7 +19,7 @@ type HtAuthorization struct {
 	Username      string
 	Authorization string
 	Authtype      int // 0-Password,1-Session,2-apikey
-	user 		 	User 
+	user 		 	*User 
 }
 
 type HtMsg interface{}
@@ -28,7 +28,6 @@ type HtRequest struct {
 	Auth 			HtAuthorization
 	session       	*HtSession
 	Message       	HtMsg
-	Nada          	string
 }
 
 type HtMsgMsg struct {
@@ -38,12 +37,12 @@ type HtMsgMsg struct {
     Recipient 	string
 }
 
-func initHttp(users *[]User) {
+func initHttp(users []*User) {
 
 	authenticate := func(auth *HtAuthorization){
 		// Authenticate()
 		stub("Do proper authentication here")
-		for _,v := range *users{
+		for _,v := range users{
 			if (v.username==auth.Username){
 				stub("user matches this crude match but this is some honor system bs.")
 				auth.user = v
@@ -67,7 +66,7 @@ func initHttp(users *[]User) {
 			        "Servername": "freenode",
 			        "Nick": "dingolvrB1",
 			        "Recipient": "#dingolove"
-			    },"Nada":"whut"
+			    }
 			}	
 	*/
 	http.HandleFunc("/msg/", func(writer http.ResponseWriter, r *http.Request) {
@@ -87,7 +86,7 @@ func initHttp(users *[]User) {
 
 
 		// Get Identity
-		for _,v := range req.Auth.user.identities{
+		for _,v := range req.Auth.user.Identities{
 			if (v.Servername == msg.Servername && v.Nick == msg.Nick) {
 				// We found the identity.  Send the msg.
 				v.connection.Privmsg(msg.Recipient, msg.Message)
@@ -104,18 +103,14 @@ func initHttp(users *[]User) {
 
 	http.HandleFunc("/history/", func(writer http.ResponseWriter, r *http.Request) {
 		var req HtRequest
-		var msg HtMsgMsg
 
 		// FromRequest()
 		body, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(body, &req)
 		authenticate(&req.Auth)
 
-		// FIXME: Find a better way to get to this...
-		msgjson,_:=json.Marshal(req.Message)
-		json.Unmarshal(msgjson, &msg)
-
-		output,_ := json.MarshalIndent(&req.Auth.user.identities, "",  "      ")
+		fmt.Printf("Ugh.", req.Auth.user.HistoryIdx)
+		output,_ := json.MarshalIndent(req.Auth.user, "",  "      ")
 
 		io.WriteString(writer, string(output))
 	})
@@ -155,7 +150,7 @@ func initHttp(users *[]User) {
 		watcherref = &watcher
 
 		// Add the watcher to all identities
-		for _,v := range req.Auth.user.identities{
+		for _,v := range req.Auth.user.Identities{
 			v.AddWatcher(watcherref)
 		}
 
@@ -183,7 +178,7 @@ func initHttp(users *[]User) {
 		*/
 
 		// Remove the watchers
-		for _,v := range req.Auth.user.identities{
+		for _,v := range req.Auth.user.Identities{
 			v.RemoveWatcher(watcherref)
 		}
 

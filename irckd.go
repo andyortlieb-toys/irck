@@ -12,7 +12,7 @@ func erro(msg string) {
 	fmt.Println("ERROR: ", msg)
 }
 
-func initUsers() *[]User {
+func initUsers() []*User {
 
 	stub("Set up some users")
 	guyA := User{username: "dingolvrA"}
@@ -30,9 +30,9 @@ func initUsers() *[]User {
 		"dv.opasc.net:6667",
 		true,
 	)
-	fmt.Println(20, idtA1.channels, guyA.identities[0].channels)
+	fmt.Println(20, idtA1.channels, guyA.Identities[0].channels)
 	idtA1.AddChannel("#dingolove", true)
-	fmt.Println(21, idtA1.channels, guyA.identities[0].channels)
+	fmt.Println(21, idtA1.channels, guyA.Identities[0].channels)
 	idtA2.AddChannel("#dingolove", true)
 	idtA1.Connect()
 	idtA2.Connect()
@@ -65,9 +65,9 @@ func initUsers() *[]User {
 			//irccon.Privmsg("#dingolove", msg+"\n")
 		}
 	*/
-	return &[]User{
-		guyA,
-		guyB,
+	return []*User{
+		&guyA,
+		&guyB,
 	}
 }
 
