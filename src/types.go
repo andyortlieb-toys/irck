@@ -123,10 +123,22 @@ func (idt *Identity) Connect() *irc.Connection {
 	}
 
 	irccon.AddCallback("PRIVMSG", historyCallback)
-	/*
 	irccon.AddCallback("NOTICE", historyCallback)
-	irccon.AddCallback("JOIN", historyCallback)
-	*/
+	irccon.AddCallback("JOIN", func(e *irc.Event){
+		// Create the history instance
+		hst := History{}
+		hst.event = e
+		hst.Originator = e.Message
+		hst.Message = fmt.Sprintf("%s joined %s", e.Nick, e.Message)
+		hst.Recipient = e.Message
+		hst.Time = time.Now()
+		hst.Raw = e.Raw
+		hst.HistoryIdx = idt.user.HistoryIncr()
+		hst.IdentityIdx = idt.IdentityIdx
+
+		idt.AddHistory(&hst)
+	})
+	
 	go func() {
 		irccon.Loop()
 	}()

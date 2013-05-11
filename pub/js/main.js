@@ -72,7 +72,8 @@ function main_controller($scope) {
 
   function getHistory(historyIdx, startListening){
     var HistoryIdx = HistoryIdx || 0;
-    $.post(
+
+   $.post(
       '/history/', 
       JSON.stringify({
         Auth:{
@@ -105,7 +106,9 @@ function main_controller($scope) {
     if (!recurrence) { $scope.interruptListen = false; }
     if (!$scope.interruptListen){
 
-    $.post(
+    if ($scope.watcher){ $scope.watcher.abort(); }
+    
+    $scope.watcher = $.post(
       '/watch/all/', 
       JSON.stringify({
         Auth:{

@@ -239,7 +239,7 @@ func initHttp(users []*User) {
 		io.WriteString(writer, fmt.Sprintf("",m.Moar.MoarThings))
 	})
 
-	http.Handle("/", http.FileServer(http.Dir("./pub")))
+	http.Handle("/", http.FileServer(http.Dir("../pub")))
 
 	http.ListenAndServe(":7776", nil)
 }
