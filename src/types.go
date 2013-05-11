@@ -89,7 +89,7 @@ func (idt *Identity) JoinChannels() {
 
 	*/
 
-	idt.connection.Join("#mkedev")
+	idt.connection.Join("#dingolove")
 }
 
 func (idt *Identity) Connect() *irc.Connection {
@@ -123,9 +123,10 @@ func (idt *Identity) Connect() *irc.Connection {
 	}
 
 	irccon.AddCallback("PRIVMSG", historyCallback)
+	/*
 	irccon.AddCallback("NOTICE", historyCallback)
 	irccon.AddCallback("JOIN", historyCallback)
-
+	*/
 	go func() {
 		irccon.Loop()
 	}()
