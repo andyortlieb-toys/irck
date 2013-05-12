@@ -81,15 +81,13 @@ func (idt *Identity) RemoveWatcher(fn *func(*History)) {
 }
 
 func (idt *Identity) JoinChannels() {
-	stub("Joining Channels")
 
-	/*
+	for _,cn := range idt.channels{
+		if cn.Enabled{
+			idt.connection.Join(cn.Name)
+		}
+	}
 
-				FIXME !!!!!
-
-	*/
-
-	idt.connection.Join("#dingolove")
 }
 
 func (idt *Identity) Connect() *irc.Connection {
@@ -161,15 +159,15 @@ func (idt *Identity) RunWatchers(hst *History){
 
 func (idt *Identity) AddChannel(msg string, enabled bool) {
 	cn := Channel{
-		name:    msg,
-		enabled: enabled,
+		Name:    msg,
+		Enabled: enabled,
 	}
 	idt.channels = append(idt.channels, &cn)
 	stub("TODO: Connect to channel if we are already connected to the host")
 }
 
 type Channel struct {
-	name    string
-	history []string
-	enabled bool
+	Name    string
+	History []string
+	Enabled bool
 }
