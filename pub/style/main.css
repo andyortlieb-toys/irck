@@ -1,5 +1,4 @@
 html,body {
-	background-color: #efeffe;
 	height:90%;
 }
 #irck-whole-page{
@@ -7,20 +6,26 @@ html,body {
 	position:relative;
 }
 
-.irck-channelbox {
-	position:absolute;
-	height:80%;
-	width:100%;
-	border: 1px solid black;
+.irck-ux-toolbar {
+	position: fixed;
+	height: 30px;
+	left: 0px;
+	width: 100%;
+	padding-left: 8px;
+	background-color: #2CA8D1;
+}
+
+
+.irck-id-list {
+	top: 0px;
+}
+.irck-chan-list {
+	top: 30px;
 }
 
 .irck-channelbox-messages {
-	position:absolute;
-	width:100%;
-	height:100%;
-	margin-bottom:30px;
-	overflow-y:scroll;
-	scrollbars:left;
+	background-color:white;
+
 }
 
 .irck-channelbox-messages-padding {
@@ -28,9 +33,5 @@ html,body {
 }
 
 .irck-channelbox-input {
-	position:absolute;
 	bottom:0px;
-	height:30px;
-	border-top: 1px solid orange;
-	width:100%;
 }

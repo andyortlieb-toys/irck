@@ -81,6 +81,7 @@ function main_controller($scope) {
         }
       }),
       function(data){
+        $scope.auth.authenticated = true;
         $scope.$apply(function(){
           $scope.identities = data.Identities;
           $scope.HistoryIdx = data.HistoryIdx;
@@ -139,6 +140,12 @@ function main_controller($scope) {
     console.log($scope.auth.username, dingo2=$scope)
     getHistory(-1, true);
   };
+
+  $scope.logout = function() {
+    console.log("plink")
+    $scope.watcher.abort();
+    $scope.auth = {};
+  };  
 
   $scope.msg = function(identity, streamname){
     console.log("dink!", arguments)

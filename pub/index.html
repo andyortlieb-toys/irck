@@ -1,64 +1,73 @@
 <!doctype html>
 <html ng-app>
-	<head>
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+  <head>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-		<script src="/js/main.js"></script>
+    <script src="/js/main.js"></script>
     <link rel="stylesheet" type="text/css" href="/style/main.css">
-	</head>
-	<body>
+  </head>
+  <body>
 
   <div id='irck-whole-page'>
 
-  	<div ng-controller="main_controller">
+    <div ng-controller="main_controller">
 
-        <form ng-submit='login()'>
-            <p>Who are you? </p>
-            <input type="text" ng-model="usernameText">
-            <input type='submit' value='Login'>
-        </form>
-
-        <span ng-repeat="identity in identities">
-          <button type="button" onclick="showChatIdentity({{identity.IdentityIdx}})">{{identity.Servername}} ({{identity.IdentityIdx}})</button>
-        </span>
-
-        <div ng-repeat="identity in identities" class="irck-chat-identity" id="irck-chat-identity-{{identity.IdentityIdx}}" style="display:none;">
-
-            <span ng-repeat="(streamname, stream) in identity.streams"> 
-              <button type="button" onclick="showChatStream({{identity.IdentityIdx}}, {{stream.streamid}})">{{streamname}}</button>
-            </span>
-
-            <div ng-repeat="(streamname, stream) in identity.streams" class="irck-chat-stream" id="irck-chat-stream-{{identity.IdentityIdx}}-{{stream.streamid}}" style="display:none;">
-
-
-              <div class='irck-channelbox'>
-
-                  <div class='irck-channelbox-messages'>
-                    <table>
-                        <tr ng-repeat="msg in stream.messages">
-                            <td>
-                              <b> {{msg.Originator}} </b>
-                            </td>
-                            <td><b>:</b></td>
-                            <td>
-                              {{msg.Message}}
-                            </td>
-                        </tr>
-                    </table>
-                    <div class='irck-channelbox-messages-padding'>&nbsp;</div>
-                  </div>
-
-                  <div class='irck-channelbox-input'>
-                    <form ng-submit='msg(identity, streamname)'>
-                      <input type='text' ng-model='identity.textinput' style='width:75%'> <input type='submit' value='Send'>
-                    </form>
-                  </div>
-
-                </div>
-              </div>
-
+        <div ng-hide='auth.authenticated'>
+          <form ng-submit='login()'>
+              <p>Who are you? </p>
+              <input type="text" ng-model="usernameText">
+              <input type='submit' value='Login'>
+          </form>
         </div>
 
+        <div ng-show='auth.authenticated'>
+            <div class='irck-ux-toolbar irck-id-list'>
+              <button type='button' ng-click='logout();'>Log Out!</button>&nbsp;&nbsp;&nbsp;&nbsp;
+              <span ng-repeat="identity in identities">
+                <button type="button" onclick="showChatIdentity({{identity.IdentityIdx}})">{{identity.Servername}} ({{identity.IdentityIdx}})</button>
+              </span>
+            </div>
+
+            <div ng-repeat="identity in identities" class="irck-chat-identity" id="irck-chat-identity-{{identity.IdentityIdx}}" style="display:none;">
+
+                <div class='irck-ux-toolbar irck-chan-list'>
+                  <span ng-repeat="(streamname, stream) in identity.streams"> 
+                    <button type="button" onclick="showChatStream({{identity.IdentityIdx}}, {{stream.streamid}})">{{streamname}}</button>
+                  </span>
+                </div>
+
+                <div ng-repeat="(streamname, stream) in identity.streams" class="irck-chat-stream" id="irck-chat-stream-{{identity.IdentityIdx}}-{{stream.streamid}}" style="display:none;">
+
+
+                  <div class='irck-channelbox'>
+
+                      <div class='irck-channelbox-messages'>
+                        <table>
+                            <tr ng-repeat="msg in stream.messages">
+                                <td>
+                                  <div style="text-align:right;"><b> {{msg.Originator}} </b></div>
+                                </td>
+                                <td><b>:</b></td>
+                                <td>
+                                  {{msg.Message}}
+                                </td>
+                            </tr>
+                        </table>
+                        <div class='irck-channelbox-messages-padding'>&nbsp;</div>
+                      </div>
+
+                      <div class='irck-ux-toolbar irck-channelbox-input'>
+                        <form ng-submit='msg(identity, streamname)'>
+                          <input type='text' ng-model='identity.textinput' style='width:75%'> <input type='submit' value='Send'>
+                        </form>
+                      </div>
+
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div> <!--irck-whole-page-->
+
     </body>
-	</body>
+  </body>
 </html>

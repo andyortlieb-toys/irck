@@ -18,18 +18,19 @@ func initUsers() []*User {
 
 	guyA := User{username: "Acdtrux"}
 
-	/*
+	
 	idtA1 := guyA.AddIdentity(
-		"freenode",
+		"EFNet",
 		"Acdtrux",
 		"irc",
-		"irc.freenode.net:6667",
+		"irc.servercentral.net:6667",
 		true,
 	)
 	//idtA1.AddChannel("#botters", true)
 	idtA1.AddChannel("#dingolove", true)
+	idtA1.AddChannel("#football", true)
 	idtA1.Connect()
-	 */
+	
 	
 	idtA2 := guyA.AddIdentity(
 		"dv",
@@ -40,7 +41,21 @@ func initUsers() []*User {
 	)
 
 	idtA2.AddChannel("#dingolove", true)
+	idtA2.AddChannel("#yadda", true)
 	idtA2.Connect()
+	
+	
+	idtA3 := guyA.AddIdentity(
+		"dv-2",
+		"Acdtrux",
+		"irc",
+		"dv.opasc.net:6667",
+		true,
+	)
+
+	idtA3.AddChannel("#dingolove", true)
+	idtA3.AddChannel("#blabla", true)
+	idtA3.Connect()
 
 	guyB := User{username: "dingolvr"}
 	idtB1 := guyB.AddIdentity(
