@@ -20,8 +20,10 @@ Chrome only.  Maybe others, but you're on your own.
     * IRC Server-based client
         * Connect to one specific identity
         * Connect to all identities through one IRC client
+        * Autoscroll only when sane.
     * Web-based client
         * Name highlighting
+            * Bubble up through buttons (channel/identity)
         * Inline image/video/audio dereferencing (by preference)
     * DCC support:
         * Back end to automatically accept & hold files
@@ -32,6 +34,13 @@ Chrome only.  Maybe others, but you're on your own.
             * Just a list of files, where they came from, etc.  click to download.
         * IRC server client:
             * Through the irck console
+    * Automatically handle messages
+        * Condition support:
+            * When inactive for X-time
+            * When X-clients are connected/active
+        * Auto respond (away)
+        * SMS notification
+        * Email notification
 
 ## Moving parts
 
