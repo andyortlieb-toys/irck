@@ -28,9 +28,22 @@ func initUsers() []*User {
 	)
 	//idtA1.AddChannel("#botters", true)
 	idtA1.AddChannel("#devmke", true)
+	idtA1.AddChannel("#linux", true)
 	idtA1.Connect()
 	
 	
+	idtA4 := guyA.AddIdentity(
+		"EFNet",
+		"Acdtrux",
+		"irc",
+		"irc.servercentral.net:6667",
+		true,
+	)
+	//idtA4.AddChannel("#botters", true)
+	idtA4.AddChannel("#football", true)
+	idtA4.Connect()
+	
+
 	idtA2 := guyA.AddIdentity(
 		"corvisa",
 		"AndyO",
@@ -43,6 +56,7 @@ func initUsers() []*User {
 	idtA2.AddChannel("#advent-dev", true)
 	idtA2.AddChannel("#cloud", true)
 	idtA2.AddChannel("#qc", true)
+	idtA2.AddChannel("#lunchclub", true)
 	idtA2.Connect()
 	
 	
