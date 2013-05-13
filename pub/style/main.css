@@ -28,10 +28,15 @@ html,body {
 
 }
 
-.irck-channelbox-messages-padding {
+.irck-channelbox-messages-padding-top {
+	height:60px;
+}
+
+.irck-channelbox-messages-padding-bottom {
 	height:40px;
 }
 
 .irck-channelbox-input {
+	padding-top:5px;
 	bottom:0px;
 }
