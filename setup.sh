@@ -4,4 +4,4 @@ source $(cd $(dirname $0); pwd )/activate.sh
 mkdir -p $GOPATH
 echo $GOPATH
 
-go get github.com/thoj/go-ircevent
+go get github.com/andyortlieb/go-ircevent
